@@ -1,21 +1,40 @@
 
-VPATH = src
-BUILDDIR = build
+BUILD = build
+BIN = bin
+OUTPUTNAME = sfml-snake
 
-CC = g++-4.8 -std=c++11
-CFLAGS  = -g 
+
+INCLUDE = -I./include -I./src
+CUSTOMLIB = -L./liblinux  -lGameMenu
+
+SRCFILES := $(shell find src/ -name *.cpp) 
+OBJFILES := $(patsubst %.cpp,%.o,$(SRCFILES))
+OBJFILES := $(foreach dir,$(OBJFILES),$(subst src/,,$(dir)))
+DIR := $(dir $(OBJFILES))
+TARGETLIST = $(foreach f,$(OBJFILES),$(BUILD)/$(f))
+
+$(foreach d,$(DIR),$(shell mkdir -p $(BUILD)/$(d)))
+$(shell mkdir -p $(BIN))
+
+CC = g++ 
+CFLAGS  = -g -std=c++11
 LIBS=-lsfml-graphics -lsfml-window -lsfml-system
 
 
-default: game
+G++_VER_LT48 := $(shell expr `$(CC) -dumpversion | cut -f1-2 -d.` \< 4.8 )
+ifeq ("$(G++_VER_LT48)","1")
+$(error old version of g++ not supported, upgrade to 4.8 or higher)
+endif
+
+$(info Source: $(SRCFILES))
+$(info Targets: $(TARGETLIST))
+
+default: $(BIN)/$(OUTPUTNAME)
 
 
-game:  build/main.o build/game.o build/food.o build/snake.o
-	$(CC) $(CFLAGS) -o game build/main.o build/game.o build/food.o build/snake.o $(LIBS)
+$(BIN)/$(OUTPUTNAME): $(TARGETLIST)
+	$(CC) $(CFLAGS) $(TARGETLIST) $(LIBS) $(CUSTOMLIB) -o $(BIN)/$(OUTPUTNAME)
 
-build/%.o: %.cpp
-	$(CC) -c $< -o $@
 
-clean: 
-	rm game (BIULDDIR)/*.o 
-	
+$(BUILD)/%.o: $(SRCFILES)
+	$(CC) -c $(CFLAGS) $(INCLUDE) $(filter %$(notdir $(patsubst %.o,%.cpp,$@)),$(SRCFILES)) -o $@

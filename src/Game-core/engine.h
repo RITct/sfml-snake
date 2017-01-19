@@ -18,28 +18,26 @@
 */
 
 
-#ifndef SS_HEADER_FOOD_H_
-#define SS_HEADER_FOOD_H_
 
-#include "engine.h"
+
+#ifndef SS_HEADER_ENGINE_H_
+#define SS_HEADER_ENGINE_H_
 
 #include <SFML/Graphics.hpp>
-#include <random>
 
-namespace gameSpace {
-	
-	class Food {
-	public:
-		Food(sf::RenderWindow *, sf::Vector2f loc);
-		sf::Vector2f getFoodLocation();
-		void drawFood();
-	private:
-		sf::Color color;
-		sf::Vector2f location;
+namespace game {
+	/*
+	Contains functions that will be used to perform certain
+	actions that will be needed that will be needed by game
 
-		sf::RenderWindow *screen;
-	};
+	*/
+
+	bool checkCollision(const sf::RectangleShape&, const sf::RectangleShape& );
+
+	/* Returns a rectangle at the specified coordinates */
+	sf::RectangleShape getRectangleAt(sf::Vector2f location, sf::Color);
 
 }
 
-#endif // !SS_HEADER_FOOD_H_
+
+#endif // !SS_HEADER_ENGINE_H_
